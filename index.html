@@ -2,412 +2,179 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>午夜 11:11</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>午夜 11:11｜3D 恐怖探索</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;overflow:hidden;background:#050505;color:#eee;font-family:Arial,"Noto Sans TC",sans-serif}
-#game{width:100vw;height:100vh}
-#ui{position:fixed;inset:0;pointer-events:none}
-#title{position:absolute;top:20px;width:100%;text-align:center;letter-spacing:8px;font-size:20px;color:#c8b9b0}
-#info{position:absolute;left:25px;top:70px;line-height:2;font-size:14px;text-shadow:0 2px 5px #000}
-#hint{position:absolute;bottom:15%;width:100%;text-align:center;color:#ddd;text-shadow:0 2px 8px #000}
-#cross{position:absolute;left:50%;top:50%;width:7px;height:7px;border:1px solid white;border-radius:50%;transform:translate(-50%,-50%)}
-#screen{position:fixed;inset:0;background:radial-gradient(#222,#000);display:flex;align-items:center;justify-content:center;text-align:center;z-index:5}
-.panel{max-width:550px;padding:35px}
-h1{font-size:48px;letter-spacing:8px;color:#a52c36}
-button{padding:14px 35px;background:#54151d;border:1px solid #9b414b;color:white;cursor:pointer;font-size:16px}
-button:hover{background:#8a2633}
+*{box-sizing:border-box}body{margin:0;background:#08080c;color:#eee7e9;font-family:system-ui,"Noto Sans TC",sans-serif;overflow:hidden}
+#game{position:fixed;inset:0}canvas{display:block}
+#title{position:fixed;left:22px;top:17px;z-index:2;pointer-events:none;text-shadow:0 2px 12px #000}
+#title strong{font-size:20px;letter-spacing:4px;color:#f1c9d4}#title small{display:block;color:#c4b5bb;font-size:11px;margin-top:4px;letter-spacing:1px}
+#hud{position:fixed;right:20px;top:18px;z-index:2;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{background:#101016c9;border:1px solid #75616b88;border-radius:99px;padding:7px 12px;font-size:12px;backdrop-filter:blur(8px)}
+#bottom{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);width:min(680px,90vw);text-align:center;pointer-events:none}
+#prompt{font-size:14px;color:#f5d8e0;text-shadow:0 2px 8px #000;min-height:24px}
+#msg{display:inline-block;margin-top:7px;padding:8px 14px;background:#09090dcc;border:1px solid #76616b66;border-radius:8px;font-size:13px;line-height:1.6;color:#ddd2d6;max-width:100%}
+#cross{position:fixed;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#f5e9ed;box-shadow:0 0 7px #fff;transform:translate(-50%,-50%);z-index:2;pointer-events:none}
+#overlay{position:fixed;inset:0;z-index:5;background:radial-gradient(ellipse at center,#19131aee,#050508f5);display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:min(560px,95vw);background:#151219;border:1px solid #745967;border-radius:16px;padding:28px;box-shadow:0 25px 90px #000}
+h1{margin:0 0 10px;color:#f1c7d3;letter-spacing:4px;font-size:28px}
+.card p{font-size:14px;line-height:1.9;color:#d9cfd3;white-space:pre-line}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;margin:18px 0;color:#cbbdc3;font-size:12px}
+button{border:0;border-radius:9px;background:#c18498;color:#160e12;font-weight:800;padding:12px 20px;font-size:14px;cursor:pointer}
+button:hover{background:#e0a7b8}
+#clues{position:fixed;left:20px;bottom:18px;z-index:2;font-size:11px;line-height:1.7;color:#d7c6cd;text-shadow:0 2px 5px #000;pointer-events:none}
+#toast{position:fixed;top:78px;left:50%;transform:translateX(-50%);background:#100d13dd;border:1px solid #725965;border-radius:9px;padding:10px 16px;z-index:4;font-size:13px;display:none;max-width:85vw;text-align:center}
+@media(max-width:600px){#title{left:12px;top:12px}#hud{right:10px;top:12px}.controls{grid-template-columns:1fr}#clues{display:none}}
 </style>
 </head>
 <body>
 <div id="game"></div>
-<div id="ui">
-  <div id="title">MIDNIGHT 11:11</div>
-  <div id="info">
-    記憶碎片：<span id="count">0 / 3</span><br>
-    手電筒：<span id="light">開啟</span><br>
-    <span id="objective">找到三張記憶碎片</span>
-  </div>
-  <div id="cross"></div>
-  <div id="hint"></div>
-</div>
-<div id="screen">
-  <div class="panel">
-    <h1>午夜 11:11</h1>
-    <p>十年前失火的老宅，今晚卻亮著燈。</p>
-    <p>找到三張記憶碎片，解開地下室的秘密。</p>
-    <p>不要讓她找到你。</p>
-    <button id="start">進入老宅</button>
-    <p style="font-size:12px;line-height:2;color:#888">
-      WASD 移動｜滑鼠環視｜Shift 奔跑<br>
-      E 調查｜F 手電筒｜ESC 暫停
-    </p>
-  </div>
-</div>
-
-<script type="module">
-import * as THREE from
-'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x050609);
-scene.fog=new THREE.FogExp2(0x090a0e,.025);
-
-const camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,100);
-camera.position.set(0,1.6,7);
-
-const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-document.querySelector("#game").appendChild(renderer.domElement);
-
-scene.add(new THREE.HemisphereLight(0x9da8c0,0x292020,.65));
-
-const moon=new THREE.DirectionalLight(0x65718d,.35);
-moon.position.set(-5,9,5);
-moon.castShadow=true;
-scene.add(moon);
-
-const flashlight=new THREE.SpotLight(0xe0e5ed,65,24,Math.PI/5,.45,1.2);
-camera.add(flashlight);
-camera.add(flashlight.target);
-
-flashlight.position.set(0, 0, 0);
-flashlight.target.position.set(0, 0, -1);
-
-flashlight.intensity = 100;
-flashlight.distance = 30;
-flashlight.angle = Math.PI / 4;
-flashlight.penumbra = 0.4;
-
-scene.add(camera);
-
-const material=(color,roughness=1)=>
-new THREE.MeshStandardMaterial({color,roughness});
-
-const wall=material(0x29272a);
-const floor=material(0x282321);
-const wood=material(0x38251f);
-const dark=material(0x08080b);
-
-function cube(x,y,z,w,h,d,mat){
- const obj=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
- obj.position.set(x,y,z);
- obj.castShadow=true;
- obj.receiveShadow=true;
- scene.add(obj);
- return obj;
+<div id="title"><strong>午夜 11:11</strong><small>DON'T LOOK BACK ・ 3D HORROR EXPLORATION</small></div>
+<div id="hud"><span class="pill" id="room">客廳</span><span class="pill" id="light">手電筒：開</span><span class="pill" id="time">23:11</span></div>
+<div id="cross"></div>
+<div id="bottom"><div id="prompt"></div><div id="msg">你在一棟陌生的老房子醒來。先找找離開的方法。</div></div>
+<div id="clues">線索：尚無</div><div id="toast"></div>
+<div id="overlay"><div class="card">
+<h1 id="overlayTitle">午夜 11:11</h1>
+<p id="overlayText">凌晨 11:11，你在一棟陌生的老房子醒來。\n手機沒有訊號，門也從外面反鎖。\n\n走廊深處傳來指甲刮過牆壁的聲音……\n\n你必須找到出口。在這棟房子裡，別相信任何人的聲音。</p>
+<div class="controls"><span>W A S D　移動</span><span>滑鼠　轉動視角</span><span>Shift　奔跑</span><span>E　調查／互動</span><span>F　開關手電筒</span><span>Esc　暫停滑鼠</span></div>
+<button id="start">開始探索</button>
+</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script>
+(()=>{
+const mount=document.getElementById('game');
+const roomEl=document.getElementById('room'),lightEl=document.getElementById('light'),timeEl=document.getElementById('time');
+const promptEl=document.getElementById('prompt'),msgEl=document.getElementById('msg'),cluesEl=document.getElementById('clues'),toastEl=document.getElementById('toast');
+const overlay=document.getElementById('overlay'),startBtn=document.getElementById('start'),overlayTitle=document.getElementById('overlayTitle'),overlayText=document.getElementById('overlayText');
+if(!window.THREE){overlayText.textContent='無法載入 3D 引擎。請確認網路連線後重新整理頁面。';startBtn.style.display='none';return;}
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x08070b);scene.fog=new THREE.FogExp2(0x08070b,.035);
+const camera=new THREE.PerspectiveCamera(74,innerWidth/innerHeight,.08,90);camera.position.set(-7,1.65,3.2);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;mount.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0x9b9bb5,0x171018,.52));
+const ambient=new THREE.AmbientLight(0x5b4655,.22);scene.add(ambient);
+const flashlight=new THREE.SpotLight(0xffe8d0,95,19,Math.PI/7,.42,1.4);flashlight.position.copy(camera.position);flashlight.castShadow=true;flashlight.shadow.mapSize.set(1024,1024);scene.add(flashlight);scene.add(flashlight.target);
+const fill=new THREE.PointLight(0x765a70,1.1,8);scene.add(fill);
+const mats={wall:new THREE.MeshStandardMaterial({color:0x393039,roughness:1}),floor:new THREE.MeshStandardMaterial({color:0x29242a,roughness:.95}),wood:new THREE.MeshStandardMaterial({color:0x38272b,roughness:.85}),dark:new THREE.MeshStandardMaterial({color:0x111116,roughness:1}),metal:new THREE.MeshStandardMaterial({color:0x71636a,metalness:.65,roughness:.5}),cloth:new THREE.MeshStandardMaterial({color:0x51404b,roughness:1}),paper:new THREE.MeshStandardMaterial({color:0xb6a49a,roughness:1}),red:new THREE.MeshStandardMaterial({color:0x681d2e,roughness:.7})};
+const boxGeo=new THREE.BoxGeometry(1,1,1);
+function box(x,y,z,sx,sy,sz,mat=mats.wall,cast=true){const m=new THREE.Mesh(boxGeo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=cast;m.receiveShadow=true;scene.add(m);return m}
+function floor(x,z,w,d,mat=mats.floor){return box(x,-.12,z,w,.24,d,mat,false)}
+function wall(x,z,w,h,d,mat=mats.wall){return box(x,h/2,z,w,h,d,mat)}
+// Connected floor plan: living room -> hall -> sister room -> basement -> entrance
+floor(-6,0,12,12);floor(0,0,4,3.2);floor(6,-2,12,8);floor(6,6,12,8);floor(-2,8,4,4);
+const H=3.5;
+// living room perimeter, doorway east
+wall(-6,-6,12,H,.35);wall(-6,6,12,H,.35);wall(-12,0,.35,H,12);wall(0,-4.7,.35,H,2.6);wall(0,4.7,.35,H,2.6);
+// hall sides and end openings
+wall(2,-1.8,4,H,.3);wall(2,1.8,4,H,.3);wall(4,0,.3,H,3.6);
+// sister room perimeter with west and south openings
+wall(6,-6,12,H,.35);wall(12,-2, .35,H,8);wall(6,2,.35,H,8);wall(2, -4.5,.3,H,3);wall(2,1,.3,H,2);
+// basement lower room and divider
+wall(6,10,12,H,.35);wall(12,6,.35,H,8);wall(-2,6,2.4,H,.35);wall(1.2,6,1.6,H,.35);wall(2,8,.3,H,4);wall(10,8,.3,H,4);
+// entrance vestibule and front door
+wall(-2,10,4,H,.35);wall(-4,8,.35,H,4);wall(0,8,.35,H,4);
+function furniture(x,z,sx,sy,sz,mat=mats.wood){return box(x,sy/2,z,sx,sy,sz,mat)}
+// Living furniture
+furniture(-8.8,-3.8,3.2,.9,1.2,mats.cloth);furniture(-4.4,-3.8,2.5,.75,1.1);furniture(-6.4,2.7,2.8,.55,1.2);
+furniture(-10,1.7,.8,1.3,.8);furniture(-3,1.6,.8,1.3,.8);
+const ceilingLights=[];
+function lamp(x,y,z,color=0xffc78e,intensity=.7){const l=new THREE.PointLight(color,intensity,7);l.position.set(x,y,z);scene.add(l);const bulb=new THREE.Mesh(new THREE.SphereGeometry(.08,8,8),new THREE.MeshBasicMaterial({color}));bulb.position.copy(l.position);scene.add(bulb);ceilingLights.push(l)}
+lamp(-6,2.8,0,0xffc78e,.45);lamp(6,2.8,-3,0xffc78e,.22);lamp(6,2.8,7,0x9b718e,.25);
+// Sister room bed, wardrobe, desk
+furniture(7,-4.4,3.5,.8,2.3,mats.cloth);furniture(10,-1.4,1.2,2.7,1.2);furniture(4.1,-1.2,1.8,.9,.9);
+const interactables=[];
+function item(name,x,y,z,desc,clue,action){const g=new THREE.Group();g.position.set(x,y,z);const base=new THREE.Mesh(new THREE.BoxGeometry(.38,.16,.28),mats.metal);base.castShadow=true;g.add(base);const glow=new THREE.PointLight(0xd99aae,.28,2);glow.position.y=.3;g.add(glow);scene.add(g);interactables.push({name,mesh:g,desc,clue,action,done:false});return g}
+item('手機',-7,1,-1.2,'手機螢幕停在 23:11。未接來電有 11 通，全部來自「家裡」。最後一則訊息：不要讓她聽見鐘聲。','手機訊息：不要讓她聽見鐘聲。');
+item('全家福',-3.5,1.35,-5.72,'照片裡有四個人，但其中一個人的臉被刮得模糊。照片背面寫著：妹妹的生日是 10 月 24 日。','生日：10 月 24 日。');
+item('生鏽鑰匙',1.3,.9,-.3,'鑰匙圈掛著一個小兔子吊飾。背面刻著「妹妹的房間」。','妹妹房間鑰匙');
+item('妹妹的日記',5.2,1.0,-5.0,'「10 月 24 日，今天是我的生日。哥哥說，只要在 11:11 前找到四位數字，我就能回家。可是他又說，不能讓她知道我還在這裡。」','妹妹的日記');
+item('兔子玩偶',9.5,.65,-4.8,'玩偶腹部的縫線被拆開，裡面塞著一張紙條：1、0、2、4。','密碼紙條：1024');
+item('上鎖抽屜',3.8,.9,-2.5,'抽屜裡有一張地下室平面圖。背面寫著：密碼不是日期，是她的生日。','地下室平面圖');
+item('錄音帶',5.1,.8,5.0,'按下播放鍵，傳出妹妹微弱的聲音：「哥哥，快走……她就在你後面。」錄音最後，是一聲貼近耳邊的呼吸。','錄音帶');
+item('電箱',9.5,1.1,7.3,'電箱上的數字鎖需要四位數密碼。輸入妹妹的生日，也許能解除玄關的電子鎖。','電箱密碼鎖','code');
+item('出口鑰匙',3.8,.8,9.0,'鑰匙上沾著乾掉的泥土。拿起它的瞬間，樓上傳來重重的腳步聲。','出口鑰匙');
+const doorMeshes=[];
+function door(name,x,z,rot,to,locked){const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=rot;const panel=new THREE.Mesh(new THREE.BoxGeometry(1.15,2.8,.16),mats.wood);panel.position.y=1.4;panel.castShadow=true;g.add(panel);const knob=new THREE.Mesh(new THREE.SphereGeometry(.07,12,8),mats.metal);knob.position.set(.38,1.25,.12);g.add(knob);scene.add(g);doorMeshes.push({name,mesh:g,to,locked,open:false});return g}
+door('客廳入口',-.05,0,Math.PI/2,'hall',false);
+door('妹妹房門',2.1,-.1,Math.PI/2,'sister',true);
+door('地下室門',6,2.05,0,'basement',true);
+door('地下室通往玄關',0,6,0,'exit',false);door('玄關大門',-2,9.9,0,'frontdoor',false);
+// Extra set dressing
+for(let i=0;i<7;i++){const candle=new THREE.PointLight(0x9a4355,.12,3);candle.position.set(-9+i*2.2,1.5,5.1);scene.add(candle)}
+// player and controls
+const keys={};let yaw=Math.PI/2,pitch=0,locked=false,flashOn=true,active=null,started=false,paused=true,elapsed=0,ghostOn=false,gameOver=false;
+const player={pos:new THREE.Vector3(-7,1.65,3.2),vel:new THREE.Vector3(),radius:.32};
+const raycaster=new THREE.Raycaster();const center=new THREE.Vector2(0,0);const clues=new Set();
+const ghost=new THREE.Group();const ghostBody=new THREE.Mesh(new THREE.CapsuleGeometry(.38,1.1,4,8),new THREE.MeshStandardMaterial({color:0xc4b7c2,transparent:true,opacity:.78,emissive:0x342330}));ghostBody.position.y=1;ghost.add(ghostBody);const eyeMat=new THREE.MeshBasicMaterial({color:0x9c142b});for(const x of [-.14,.14]){const e=new THREE.Mesh(new THREE.SphereGeometry(.055,8,8),eyeMat);e.position.set(x,1.35,.32);ghost.add(e)}ghost.position.set(8,0,8);scene.add(ghost);ghost.visible=false;
+function notify(t){msgEl.textContent=t}
+function toast(t){toastEl.textContent=t;toastEl.style.display='block';clearTimeout(toast._timer);toast._timer=setTimeout(()=>toastEl.style.display='none',2200)}
+function updateClues(){cluesEl.innerHTML='線索：'+(clues.size?[...clues].join('、'):'尚無')}
+function setRoom(){const p=player.pos;let n='客廳';if(p.x>0&&p.x<4)n='走廊';if(p.x>=4&&p.z<2)n='妹妹的房間';if(p.z>=2&&p.x>=0)n='地下室';if(p.x<0&&p.z>6)n='玄關';roomEl.textContent=n}
+function look(){camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;camera.position.copy(player.pos);const dir=new THREE.Vector3(0,0,-1).applyEuler(camera.rotation);flashlight.position.copy(camera.position);flashlight.target.position.copy(camera.position).add(dir.multiplyScalar(8));flashlight.target.updateMatrixWorld()}
+function withinBounds(x,z){if(x<-11.45||x>11.45||z<-5.45||z>9.45)return false;
+ // room connectivity boundary checks
+ if(x>-.0&&x<.5&&z< -1.5)return false;
+ if(x>-.0&&x<.5&&z>1.5)return false;
+ if(x>1.8&&x<2.5&&z>1.6&&z<9.4)return false;
+ if(x>1.8&&x<2.5&&z< -1.8)return false;
+ if(x>11.4||x< -11.4)return false;
+ // furniture collision approximations
+ const blocks=[[-8.8,-3.8,1.8,.8],[-4.4,-3.8,1.4,.7],[-6.4,2.7,1.5,.8],[-10,1.7,.55,.5],[-3,1.6,.55,.5],[7,-4.4,1.9,1.2],[10,-1.4,.8,.7],[4.1,-1.2,.9,.5]];
+ for(const [bx,bz,rx,rz] of blocks)if(Math.abs(x-bx)<rx+player.radius&&Math.abs(z-bz)<rz+player.radius)return false;
+ return true}
+function canMoveTo(x,z){return withinBounds(x,z)}
+function nearestInteractable(){
+ active=null;let best=2.5;
+ for(const it of interactables){if(it.done)continue;const d=player.pos.distanceTo(it.mesh.position);if(d<best){best=d;active={type:'item',data:it}}}
+ for(const d of doorMeshes){const dist=player.pos.distanceTo(d.mesh.position);if(dist<2.3&&dist<best){best=dist;active={type:'door',data:d}}}
 }
-
-function room(x,z,w,d){
- cube(x,-.15,z,w,.3,d,floor);
- cube(x,3,z,w,.2,d,dark);
- cube(x-w/2,1.5,z,.2,3,d,wall);
- cube(x+w/2,1.5,z,.2,3,d,wall);
- cube(x,1.5,z-d/2,w,3,.2,wall);
- cube(x,1.5,z+d/2,w,3,.2,wall);
+function enterRoom(to){
+ if(to==='sister'&&!clues.has('妹妹房間鑰匙')){notify('門鎖住了。你需要先找到生鏽鑰匙。');return}
+ if(to==='basement'&&!clues.has('妹妹的日記')){notify('地下室門鎖住了。日記裡也許藏著線索。');return}
+ if(to==='exit'&&!clues.has('出口鑰匙')){notify('電子鎖沒有反應。你還沒找到出口鑰匙。');return}
+ if(to==='hall'){player.pos.set(1,1.65,0)}
+ if(to==='sister'){player.pos.set(5,1.65,-.5)}
+ if(to==='basement'){player.pos.set(5,1.65,4);ghostOn=true;ghost.visible=true;ghost.position.set(9,0,8);notify('地下室的門在你身後關上了。黑暗裡，有東西醒了。')}
+ if(to==='exit'){player.pos.set(-2,1.65,8);notify('你來到玄關。大門就在眼前。')}
+ if(to==='living'){player.pos.set(-1,1.65,0)}
+ setRoom();
 }
-
-// 五個房間
-room(0,5,8,8);
-room(0,-3,8,8);
-room(-8,-3,8,8);
-room(8,-3,8,8);
-room(0,-11,8,8);
-
-// 走廊
-cube(0,-.1,1,3,.2,4,floor);
-cube(-4,-.1,-3,4,.2,2,floor);
-cube(4,-.1,-3,4,.2,2,floor);
-cube(0,-.1,-7,3,.2,2,floor);
-
-// 家具
-cube(-2,.7,5,2,.2,.7,wood);
-cube(-8,.4,-4,3,.5,2,wood);
-cube(-8,.8,-4,2.8,.3,1.8,material(0x514748));
-cube(-11,1,-.5,1,2,1,wood);
-cube(8,.8,-3,3,.2,1.5,wood);
-
-// 燈光
-const lamps=[];
-function addLamp(x,y,z){
- const l=new THREE.PointLight(0x9b5944,2.8,11);
- l.position.set(x,y,z);
- scene.add(l);
- lamps.push(l);
-}
-addLamp(-2,2.5,5);
-addLamp(0,2.5,-3);
-addLamp(-8,2.5,-3);
-addLamp(8,2.5,-3);
-addLamp(0,2.5,-11);
-
-// 記憶碎片
-const memories=[];
-function addMemory(x,y,z,title,text){
- const obj=new THREE.Mesh(
-  new THREE.BoxGeometry(.35,.05,.25),
-  material(0xc8bda6)
- );
- obj.position.set(x,y,z);
- scene.add(obj);
- memories.push({obj,title,text,found:false});
-}
-addMemory(-2,1.1,5.8,"客廳的紙條",
-"媽媽說，十一點以後不可以開門。\n可是小雨一直敲門。");
-addMemory(-8,1.1,-4,"妹妹的日記",
-"鑰匙藏在餐桌下面。\n姐姐回來了，叫她不要相信鏡子。");
-addMemory(8,1.1,-3,"餐廳的照片",
-"火不是意外。\n那天晚上，姐姐把門鎖上了。");
-
-// 地下室密碼物件
-const keypad=new THREE.Mesh(
- new THREE.BoxGeometry(.6,.9,.1),
- material(0x66513d)
-);
-keypad.position.set(0,1.2,-13.5);
-scene.add(keypad);
-
-// 鬼怪
-const ghost=new THREE.Group();
-const ghostBody=new THREE.Mesh(
- new THREE.CapsuleGeometry(.35,1,5,8),
- dark
-);
-ghostBody.position.y=1;
-ghost.add(ghostBody);
-
-const ghostHead=new THREE.Mesh(
- new THREE.SphereGeometry(.32,12,10),
- dark
-);
-ghostHead.position.y=1.8;
-ghost.add(ghostHead);
-
-const eyeMaterial=new THREE.MeshBasicMaterial({color:0xc90020});
-for(const x of [-.12,.12]){
- const eye=new THREE.Mesh(
-  new THREE.SphereGeometry(.04,8,8),
-  eyeMaterial
- );
- eye.position.set(x,1.85,-.28);
- ghost.add(eye);
-}
-ghost.position.set(-8,0,-8);
-ghost.visible=false;
-scene.add(ghost);
-
-let started=false;
-let locked=false;
-let keys={};
-let yaw=0,pitch=0;
-let found=0;
-let sanity=100;
-let flash=true;
-let nearest=null;
-let gameOver=false;
-
-function updateHUD(){
- document.querySelector("#count").textContent=found+" / 3";
- document.querySelector("#objective").textContent=
- found===3?"前往地下室輸入密碼":"尋找記憶碎片";
-}
-
-function message(text){
- document.querySelector("#hint").textContent=text;
-}
-
-function startGame(){
- started=true;
- document.querySelector("#screen").style.display="none";
- renderer.domElement.requestPointerLock();
-}
-
-document.querySelector("#start").onclick=startGame;
-
-document.addEventListener("pointerlockchange",()=>{
- locked=document.pointerLockElement===renderer.domElement;
- if(started&&!locked&&!gameOver){
-  document.querySelector("#screen").style.display="flex";
-  document.querySelector(".panel").innerHTML=
-  '<h1>暫停</h1><p>屋子裡的聲音沒有停止。</p><button onclick="location.reload()">重新開始</button>';
- }
-});
-
-document.addEventListener("mousemove",e=>{
- if(!locked)return;
- yaw-=e.movementX*.002;
- pitch-=e.movementY*.002;
- pitch=Math.max(-1.3,Math.min(1.3,pitch));
- camera.rotation.order="YXZ";
- camera.rotation.y=yaw;
- camera.rotation.x=pitch;
-});
-
-document.addEventListener("keydown",e=>{
- keys[e.code]=true;
- if(e.code==="KeyF"){
-  flash=!flash;
-  flashlight.intensity=flash?35:0;
-  document.querySelector("#light").textContent=flash?"開啟":"關閉";
- }
- if(e.code==="KeyE")interact();
-});
-document.addEventListener("keyup",e=>keys[e.code]=false);
-
-renderer.domElement.addEventListener("click",()=>{
- if(started&&!locked&&!gameOver)renderer.domElement.requestPointerLock();
-});
-
-const raycaster=new THREE.Raycaster();
-function findTarget(){
- raycaster.setFromCamera(new THREE.Vector2(0,0),camera);
- const objects=[
-  ...memories.filter(m=>!m.found).map(m=>m.obj),
-  keypad
- ];
- const hits=raycaster.intersectObjects(objects);
- return hits.length&&hits[0].distance<2.5?hits[0].object:null;
-}
-
 function interact(){
- if(!started||!locked)return;
- const target=findTarget();
- if(!target)return;
-
- const memory=memories.find(m=>m.obj===target);
- if(memory){
-  memory.found=true;
-  found++;
-  memory.obj.visible=false;
-  updateHUD();
-  message(memory.title+"："+memory.text.replaceAll("\n"," "));
-  if(found===1)ghost.visible=true;
-  if(found===3)message("地下室的門打開了。快去找出口。");
-  return;
- }
- if(target===keypad){
-  if(found<3){
-   message("門鎖住了，還有記憶沒有找回。");
-   return;
-  }
-  const code=prompt("輸入四位數密碼");
-  if(code==="1024"){
-   gameOver=true;
-   document.exitPointerLock();
-   document.querySelector("#screen").style.display="flex";
-   document.querySelector(".panel").innerHTML=
-   "<h1>逃出老宅</h1><p>你終於想起那天晚上發生的事。</p><p>午夜 11:11 — END</p><button onclick='location.reload()'>重新開始</button>";
-  }else message("密碼錯誤。她聽見了。");
- }
+ if(!active){notify('附近沒有可以互動的物品。');return}
+ if(active.type==='door'){if(active.data.to==='frontdoor'){if(clues.has('出口鑰匙')&&clues.has('電箱已解除'))win();else notify('大門的電子鎖還沒解除。先輸入電箱密碼並找到鑰匙。');return}enterRoom(active.data.to);return}
+ const it=active.data;
+ if(it.action==='code'){const code=prompt('輸入四位數密碼：');if(code==='1024'){clues.add('電箱已解除');notify('密碼正確。玄關電子鎖解除，快離開這裡！')}else if(code!==null)notify('密碼錯誤。地下室深處傳來敲擊聲。');updateClues();return}
+ it.done=true;if(it.clue){clues.add(it.clue);updateClues()}
+ notify(it.desc);
+ if(it.name==='錄音帶'){ghostOn=true;ghost.visible=true;ghost.position.set(9,0,8);toast('身後傳來沉重的腳步聲……')}
+ if(it.name==='出口鑰匙')toast('出口鑰匙已取得。前往玄關！');
 }
-
-// 簡易碰撞
-function blocked(x,z){
- return Math.abs(x+2)<1.1&&Math.abs(z-5)<.8;
-}
-
-const clock=new THREE.Clock();
-let time=0;
-
-function animate(){
- requestAnimationFrame(animate);
- const dt=Math.min(clock.getDelta(),.04);
- time+=dt;
-
- lamps.forEach((l,i)=>{
-  l.intensity=1.1+Math.sin(time*3+i*2)*.5;
- });
-
- if(started&&locked&&!gameOver){
-  const move=new THREE.Vector3();
-  if(keys.KeyW)move.z-=1;
-  if(keys.KeyS)move.z+=1;
-  if(keys.KeyA)move.x-=1;
-  if(keys.KeyD)move.x+=1;
-  move.normalize();
-
-  const speed=keys.ShiftLeft?4.2:2.5;
-  const dx=(move.x*Math.cos(yaw)+move.z*Math.sin(yaw))*speed*dt;
-  const dz=(move.z*Math.cos(yaw)-move.x*Math.sin(yaw))*speed*dt;
-
-  if(!blocked(camera.position.x+dx,camera.position.z))
-   camera.position.x+=dx;
-  camera.position.z+=dz;
-
-  camera.position.x=THREE.MathUtils.clamp(camera.position.x,-11.5,11.5);
-  camera.position.z=THREE.MathUtils.clamp(camera.position.z,-14,9);
-  camera.position.y=1.6;
-
-  // 手電筒位置跟隨攝影機
-camera.getWorldPosition(flashlight.position);
-
-// 取得攝影機目前真正面對的方向
-const direction = new THREE.Vector3();
-camera.getWorldDirection(direction);
-
-// 將照射目標放在視線前方
-flashlight.target.position
-  .copy(flashlight.position)
-  .add(direction.multiplyScalar(10));
-
-  nearest=findTarget();
-  message(nearest?"按 E 調查":"");
-
-  if(ghost.visible){
-   const dx=camera.position.x-ghost.position.x;
-   const dz=camera.position.z-ghost.position.z;
-   const dist=Math.hypot(dx,dz);
-   if(dist>1.2){
-    ghost.position.x+=dx/dist*1.1*dt;
-    ghost.position.z+=dz/dist*1.1*dt;
-   }
-   ghost.lookAt(camera.position.x,0,camera.position.z);
-   if(dist<5){
-    sanity-=dt*2;
-    if(sanity<=0){
-     gameOver=true;
-     document.exitPointerLock();
-     document.querySelector("#screen").style.display="flex";
-     document.querySelector(".panel").innerHTML=
-     "<h1>她找到你了</h1><p>這次，不要再丟下我。</p><button onclick='location.reload()'>重新開始</button>";
-    }
-   }
-  }
+function lose(){ghostOn=false;ghost.visible=false;player.pos.set(-7,1.65,3.2);yaw=Math.PI/2;clues.delete('電箱已解除');setRoom();notify('你被抓住了。再次睜開眼睛，你又回到客廳……');toast('她不會讓你這麼容易離開。')}
+function win(){paused=true;gameOver=true;document.exitPointerLock?.();overlay.style.display='flex';overlayTitle.textContent='結局：循環';overlayText.textContent='你把鑰匙插進大門。\n門外沒有街道，只有一片熟悉的客廳。\n\n牆上的時鐘再次指向 11:11。\n照片裡原本模糊的那張臉，變成了你的樣子。';startBtn.textContent='重新開始';}
+function animate(ts){
+ requestAnimationFrame(animate);const dt=Math.min(.04,(ts-(animate.last||ts))/1000);animate.last=ts;
+ if(started&&!paused&&!gameOver){
+ elapsed+=dt;timeEl.textContent='23:'+String(11+Math.floor(elapsed/60)%49).padStart(2,'0');
+ const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));const right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));let move=new THREE.Vector3();
+ if(keys.KeyW)move.add(forward);if(keys.KeyS)move.sub(forward);if(keys.KeyD)move.add(right);if(keys.KeyA)move.sub(right);
+ if(move.lengthSq()>0){move.normalize();const speed=(keys.ShiftLeft||keys.ShiftRight)?4.6:2.5;const nx=player.pos.x+move.x*speed*dt,nz=player.pos.z+move.z*speed*dt;if(canMoveTo(nx,player.pos.z))player.pos.x=nx;if(canMoveTo(player.pos.x,nz))player.pos.z=nz}
+ nearestInteractable();promptEl.textContent=active?'按 E 互動：'+active.data.name:'';setRoom();
+ if(ghostOn){const dx=player.pos.x-ghost.position.x,dz=player.pos.z-ghost.position.z,dist=Math.hypot(dx,dz);if(dist>.75){const speed=(keys.ShiftLeft||keys.ShiftRight)?1.05:1.45;ghost.position.x+=dx/dist*speed*dt;ghost.position.z+=dz/dist*speed*dt;ghost.lookAt(player.pos.x,1,player.pos.z)}if(dist<.9)lose()}
  }
-
- renderer.render(scene,camera);
+ look();renderer.render(scene,camera);
 }
-animate();
-
-window.addEventListener("resize",()=>{
- camera.aspect=innerWidth/innerHeight;
- camera.updateProjectionMatrix();
- renderer.setSize(innerWidth,innerHeight);
-});
-  // 禁止滑鼠右鍵跳出瀏覽器選單
-document.addEventListener('contextmenu', (e) => {
-  e.preventDefault();
-});
-
-// 滑鼠右鍵觸發原本 F 鍵的手電筒開關功能
-document.addEventListener('mousedown', (e) => {
-  if (e.button === 2) {
-    e.preventDefault();
-
-    document.dispatchEvent(
-      new KeyboardEvent('keydown', {
-        key: 'f',
-        code: 'KeyF',
-        bubbles: true
-      })
-    );
-  }
-});
+requestAnimationFrame(animate);
+function start(){if(gameOver){location.reload();return}started=true;paused=false;overlay.style.display='none';renderer.domElement.requestPointerLock?.();notify('探索客廳。靠近物品後按 E 調查。')}
+startBtn.addEventListener('click',start);
+renderer.domElement.addEventListener('click',()=>{if(started&&!gameOver&&!locked)renderer.domElement.requestPointerLock?.()});
+document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===renderer.domElement;if(started&&!gameOver){paused=!locked;if(!locked){promptEl.textContent='點擊畫面繼續';}else promptEl.textContent=''}})
+document.addEventListener('mousemove',e=>{if(!locked)return;yaw-=e.movementX*.0022;pitch-=e.movementY*.0022;pitch=Math.max(-1.35,Math.min(1.35,pitch))});
+document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyF'&&started){flashOn=!flashOn;flashlight.visible=flashOn;lightEl.textContent='手電筒：'+(flashOn?'開':'關')}if(e.code==='KeyE'&&started&&!paused)interact()});
+document.addEventListener('keyup',e=>keys[e.code]=false);
+document.addEventListener('keydown',e=>{if(e.code==='Escape'&&started&&!gameOver)paused=true});
+window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+flashlight.visible=true;setRoom();updateClues();look();
+})();
 </script>
 </body>
 </html>
