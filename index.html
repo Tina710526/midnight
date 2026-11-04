@@ -1,129 +1,380 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#100d18">
-<title>午夜 11:11｜鬼屋解謎</title>
+<title>午夜 11:11</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Special+Elite&display=swap');
-:root{--bg:#100d18;--panel:#1b1723;--panel2:#241d2b;--red:#9d2838;--red2:#d34b58;--gold:#c4a875;--text:#e6dfd7;--muted:#9c9297;--line:#493640}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#302033 0,#100d18 58%);color:var(--text);font-family:'Noto Serif TC',serif;min-height:100vh}
-button{font:inherit;cursor:pointer}.shell{max-width:1100px;margin:auto;padding:22px 18px 50px}
-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:8px 0 18px;gap:15px}
-.brand{font-family:'Special Elite',serif;letter-spacing:3px;color:#d7c3b2;font-size:14px}.brand b{color:var(--red2);font-size:18px}
-.status{display:flex;gap:10px;flex-wrap:wrap}.pill{border:1px solid var(--line);background:#17121d;padding:7px 11px;border-radius:3px;font-size:12px;color:#c9bec0}
-h1{font-size:clamp(34px,7vw,66px);letter-spacing:5px;text-align:center;margin:42px 0 8px;text-shadow:0 0 25px #8b293b80}
-.subtitle{text-align:center;color:#b49da3;letter-spacing:4px;font-size:12px;margin-bottom:30px}
-.intro{max-width:690px;margin:0 auto 25px;text-align:center;line-height:2;color:#c9bdc0}
-.btn{background:linear-gradient(135deg,#7e2635,#431b2b);color:#f4e8e3;border:1px solid #a54b59;padding:12px 22px;letter-spacing:2px;transition:.2s}
-.btn:hover{filter:brightness(1.25);transform:translateY(-1px)}.btn.secondary{background:#211b27;border-color:#67505a;color:#d9cbd0}
-.center{text-align:center}.hidden{display:none!important}
-.game-layout{display:grid;grid-template-columns:minmax(0,1fr) 275px;gap:18px;margin-top:24px}
-.scene{border:1px solid #493640;background:#17131d;min-height:520px;position:relative;overflow:hidden;box-shadow:0 15px 45px #0008}
-.scene-art{height:300px;position:relative;overflow:hidden;background:linear-gradient(#161321,#33212b 70%,#17131d)}
-.scene-art:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 34%,#c1a17b24,transparent 35%),linear-gradient(90deg,#08070c88,transparent 25%,transparent 75%,#08070c88)}
-.scene-art:after{content:"";position:absolute;inset:0;opacity:.18;background:repeating-linear-gradient(0deg,transparent 0 3px,#000 4px)}
-.room-visual{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:100px;filter:drop-shadow(0 0 20px #000);opacity:.8}
-.room-label{position:absolute;left:20px;top:16px;z-index:2;color:#d5c0b5;font-size:12px;letter-spacing:3px;text-shadow:0 2px 5px #000}
-.hotspot{position:absolute;z-index:3;border:1px solid #c4a87588;background:#17101a9c;color:#f0dcb5;padding:8px 11px;font-size:12px;backdrop-filter:blur(4px)}
-.hotspot:hover{background:#702b3dcc;border-color:#e6a2a2}
-.door{left:43%;top:22%;width:15%;height:67%;border:4px solid #4d3030;background:linear-gradient(90deg,#21151c,#493039,#21151c);box-shadow:0 0 15px #000}
-.door:after{content:"✦";position:absolute;right:12%;top:50%;color:#b89565}
-.art-hall{background:linear-gradient(90deg,#0a0910,#29202a 45%,#100d17)}.art-room{background:linear-gradient(#181323,#44313a 70%,#120f17)}.art-clock{background:radial-gradient(circle at 50% 40%,#554039,#1a1420 58%)}
-.description{padding:18px 20px 10px;line-height:1.8;color:#c8bdc0;min-height:70px}
-.actions{display:flex;gap:9px;flex-wrap:wrap;padding:0 20px 20px}
-.side{border:1px solid var(--line);background:#17131d;padding:16px;height:max-content}
-.side h3{font-size:14px;color:var(--gold);letter-spacing:2px;border-bottom:1px solid var(--line);padding-bottom:10px;margin:0 0 12px}
-.side section+section{margin-top:22px}.inventory{display:flex;flex-wrap:wrap;gap:7px}.item{font-size:11px;padding:6px 8px;border:1px solid #5b4850;color:#dfc9c2;background:#211b26}
-.item.empty{color:#766d72;border-style:dashed}.clue{font-size:12px;line-height:1.7;color:#b7a9ae;margin:7px 0}
-.log{height:120px;overflow:auto;font-size:11px;line-height:1.7;color:#a99ba1}
-.modal-backdrop{position:fixed;inset:0;background:#050409df;z-index:20;display:grid;place-items:center;padding:18px}
-.modal{width:min(480px,100%);background:#1b1520;border:1px solid #8c4a55;padding:25px;box-shadow:0 0 55px #8b203866;text-align:center}
-.modal h2{color:#dca6a4;letter-spacing:3px}.modal p{line-height:1.9;color:#d0c2c5}.modal input{background:#0e0b13;border:1px solid #76525b;color:#fff;padding:12px;width:150px;text-align:center;font-size:20px;letter-spacing:6px}
-.ending{font-size:46px;margin:12px}.danger{animation:shake .25s 3,flash .7s 2}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}@keyframes flash{0%,100%{filter:none}50%{filter:brightness(2) sepia(1) hue-rotate(300deg)}}
-footer{text-align:center;color:#72666e;font-size:11px;margin-top:35px;letter-spacing:2px}
-@media(max-width:760px){.game-layout{grid-template-columns:1fr}.scene{min-height:460px}.scene-art{height:260px}.side{display:grid;grid-template-columns:1fr 1fr;gap:15px}.side section+section{margin:0}.status{justify-content:flex-end}.pill{font-size:10px}}
+*{box-sizing:border-box}
+body{margin:0;overflow:hidden;background:#050505;color:#eee;font-family:Arial,"Noto Sans TC",sans-serif}
+#game{width:100vw;height:100vh}
+#ui{position:fixed;inset:0;pointer-events:none}
+#title{position:absolute;top:20px;width:100%;text-align:center;letter-spacing:8px;font-size:20px;color:#c8b9b0}
+#info{position:absolute;left:25px;top:70px;line-height:2;font-size:14px;text-shadow:0 2px 5px #000}
+#hint{position:absolute;bottom:15%;width:100%;text-align:center;color:#ddd;text-shadow:0 2px 8px #000}
+#cross{position:absolute;left:50%;top:50%;width:7px;height:7px;border:1px solid white;border-radius:50%;transform:translate(-50%,-50%)}
+#screen{position:fixed;inset:0;background:radial-gradient(#222,#000);display:flex;align-items:center;justify-content:center;text-align:center;z-index:5}
+.panel{max-width:550px;padding:35px}
+h1{font-size:48px;letter-spacing:8px;color:#a52c36}
+button{padding:14px 35px;background:#54151d;border:1px solid #9b414b;color:white;cursor:pointer;font-size:16px}
+button:hover{background:#8a2633}
 </style>
 </head>
 <body>
-<div class="shell">
-<header><div class="brand"><b>11:11</b> / MIDNIGHT ARCHIVE</div><div class="status"><span class="pill" id="clock">時間 23:11</span><span class="pill" id="health">精神狀態 ♥♥♥</span></div></header>
-<section id="start">
-<h1>午夜 11:11</h1><div class="subtitle">THE HOUSE THAT REMEMBERS</div>
-<p class="intro">「如果你在午夜 11:11 收到邀請，千萬不要回頭。」<br>一封沒有署名的信，將你帶到城郊的廢棄洋樓。大門在身後關上，屋內的時鐘開始倒數。<br>找出失蹤少女留下的真相，在它找到你之前離開這裡。</p>
-<div class="center"><button class="btn" id="startBtn">進入洋樓</button><p style="font-size:11px;color:#82747b;margin-top:15px">建議開啟音量｜含驚嚇畫面與追逐情節</p></div>
-</section>
-<section id="game" class="hidden">
-<div class="game-layout">
-<main class="scene" id="scene">
-<div class="scene-art" id="sceneArt"><div class="room-label" id="roomLabel">01 / 大廳</div><div class="room-visual" id="roomVisual">🏚️</div><div id="hotspots"></div></div>
-<div class="description" id="description"></div><div class="actions" id="actions"></div>
-</main>
-<aside class="side">
-<section><h3>隨身物品</h3><div class="inventory" id="inventory"><span class="item empty">尚無物品</span></div></section>
-<section><h3>已發現線索</h3><div id="clues"><p class="clue">尚未找到線索。</p></div></section>
-<section><h3>探索紀錄</h3><div class="log" id="log">你推開了洋樓的大門……</div></section>
-</aside>
+<div id="game"></div>
+<div id="ui">
+  <div id="title">MIDNIGHT 11:11</div>
+  <div id="info">
+    記憶碎片：<span id="count">0 / 3</span><br>
+    手電筒：<span id="light">開啟</span><br>
+    <span id="objective">找到三張記憶碎片</span>
+  </div>
+  <div id="cross"></div>
+  <div id="hint"></div>
 </div>
-</section>
-<footer>AN INTERACTIVE HORROR ESCAPE ROOM · MADE FOR THE BRAVE</footer>
+<div id="screen">
+  <div class="panel">
+    <h1>午夜 11:11</h1>
+    <p>十年前失火的老宅，今晚卻亮著燈。</p>
+    <p>找到三張記憶碎片，解開地下室的秘密。</p>
+    <p>不要讓她找到你。</p>
+    <button id="start">進入老宅</button>
+    <p style="font-size:12px;line-height:2;color:#888">
+      WASD 移動｜滑鼠環視｜Shift 奔跑<br>
+      E 調查｜F 手電筒｜ESC 暫停
+    </p>
+  </div>
 </div>
-<div class="modal-backdrop hidden" id="modal"><div class="modal"><div class="ending" id="modalIcon">🔒</div><h2 id="modalTitle">上鎖的門</h2><p id="modalText"></p><div id="modalInput"></div><div style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap" id="modalButtons"></div></div></div>
-<script>
-const $=id=>document.getElementById(id);
-const state={room:0,items:[],clues:[],health:3,minute:11,seen:{},diary:false,portrait:false,key:false,code:false,final:false,ended:false};
-const rooms=[
- {name:"大廳",label:"01 / 大廳",icon:"🏚️",art:"",desc:"灰塵在空氣中浮動。大門已經從外側鎖死，牆上的畫像似乎正盯著你。角落有一張接待桌，樓梯通往二樓。",spots:[["desk","接待桌", "桌面上有一張被撕去一半的便條。抽屜裡似乎有東西。"],["portrait","老舊畫像","畫中女人的眼睛被挖去，畫框背面刻著一行小字。"],["stairs","樓梯","木頭發出不自然的呻吟。二樓走廊一片漆黑。"]]},
- {name:"少女房間",label:"02 / 少女房間",icon:"🛏️",art:"art-room",desc:"房間裡保留著少女離開前的模樣。床頭的音樂盒自己轉動，桌上攤開一本日記。",spots:[["diary","桌上的日記","日記最後一頁寫著：『她最害怕的不是黑暗，而是被時間記住。』"],["music","音樂盒","音樂盒底部有一個小小的鑰匙孔。"],["mirror","梳妝鏡","鏡子裡的你……好像慢了半拍。"]]},
- {name:"地下室",label:"03 / 地下室",icon:"🕯️",art:"art-hall",desc:"潮濕的地下室瀰漫著鐵鏽味。牆上掛滿停止的時鐘，其中一個時鐘的指針仍在顫動。",spots:[["clock","停擺的時鐘","時鐘背面有四個數字的位置，旁邊寫著：『她離開的那一天。』"],["cabinet","鐵櫃","鐵櫃上有四位數密碼鎖。"],["shadow","角落的黑影","你聽見有人用指甲刮著牆壁……"]]},
- {name:"逃生門",label:"04 / 最後的門",icon:"🚪",art:"art-clock",desc:"走廊盡頭是一扇沉重的鐵門。門上刻著：『名字是最後的鑰匙。』身後傳來緩慢的腳步聲。",spots:[["door","鐵門","門上有一個輸入面板。你必須找出她真正的名字。"],["wall","牆上刻痕","四道刻痕下面有一行字：『不是她被叫的名字。』"]]}
-];
-function log(t){$("log").innerHTML=t+"<br>"+$("log").innerHTML}
-function addItem(x){if(!state.items.includes(x)){state.items.push(x);renderInventory();log("取得物品："+x)}}
-function addClue(x){if(!state.clues.includes(x)){state.clues.push(x);$("clues").innerHTML=state.clues.map(c=>`<p class="clue">✦ ${c}</p>`).join("")}}
-function renderInventory(){$("inventory").innerHTML=state.items.length?state.items.map(x=>`<span class="item">${x}</span>`).join(""):'<span class="item empty">尚無物品</span>'}
-function render(){
- const r=rooms[state.room];$("roomLabel").textContent=r.label;$("roomVisual").textContent=r.icon;$("sceneArt").className="scene-art "+r.art;$("description").textContent=r.desc;
- $("hotspots").innerHTML=r.spots.map(s=>`<button class="hotspot" style="${spotStyle(s[0])}" onclick="inspect('${s[0]}')">${s[1]}</button>`).join("");
- $("actions").innerHTML=`<button class="btn secondary" onclick="move(-1)" ${state.room===0?"disabled":""}>← 返回上一區</button><button class="btn" onclick="move(1)" ${state.room===3?"disabled":""}>前往下一區 →</button><button class="btn secondary" onclick="showHint()">查看提示</button>`;
- $("clock").textContent="時間 23:"+String(state.minute).padStart(2,"0");$("health").textContent="精神狀態 "+"♥".repeat(state.health)+"♡".repeat(3-state.health);
+
+<script type="module">
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x050609);
+scene.fog=new THREE.FogExp2(0x090a0e,.045);
+
+const camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,100);
+camera.position.set(0,1.6,7);
+
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+document.querySelector("#game").appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0x777788,0x171010,.25));
+
+const moon=new THREE.DirectionalLight(0x65718d,.35);
+moon.position.set(-5,9,5);
+moon.castShadow=true;
+scene.add(moon);
+
+const flashlight=new THREE.SpotLight(0xe0e5ed,35,18,Math.PI/7,.5,1.5);
+camera.add(flashlight);
+camera.add(flashlight.target);
+scene.add(camera);
+
+const material=(color,roughness=1)=>
+new THREE.MeshStandardMaterial({color,roughness});
+
+const wall=material(0x29272a);
+const floor=material(0x282321);
+const wood=material(0x38251f);
+const dark=material(0x08080b);
+
+function cube(x,y,z,w,h,d,mat){
+ const obj=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+ obj.position.set(x,y,z);
+ obj.castShadow=true;
+ obj.receiveShadow=true;
+ scene.add(obj);
+ return obj;
 }
-function spotStyle(id){const styles={desk:"left:8%;top:55%",portrait:"right:8%;top:22%",stairs:"right:8%;bottom:8%",diary:"left:12%;bottom:15%",music:"right:12%;top:48%",mirror:"left:42%;top:15%",clock:"left:36%;top:23%",cabinet:"right:8%;bottom:12%",shadow:"left:8%;bottom:10%",door:"left:40%;top:55%",wall:"right:8%;top:20%"};return styles[id]||"left:10%;top:10%"}
-function tick(n=1){state.minute+=n;if(state.minute>=60)state.minute=0;if(state.minute>=30&&!state.seen.chase){state.seen.chase=true;scare("它聽見你了","走廊盡頭的影子突然朝你衝來！你跌倒在地，勉強逃開。",true)}render()}
-function move(d){if(state.ended)return;const next=state.room+d;if(next<0||next>3)return;
- if(next===1&&!state.items.includes("生鏽鑰匙")){modal("🔒","門被鎖住了","少女房間的門需要一把鑰匙。先搜尋大廳。",["知道了"]);return}
- if(next===2&&!state.diary){modal("🕯️","通道被封住","你還沒讀完少女的日記，暫時找不到地下室入口。",["知道了"]);return}
- if(next===3&&!state.code){modal("🚫","最後的門尚未開啟","地下室的鐵櫃裡，或許藏著離開洋樓的線索。",["知道了"]);return}
- state.room=next;tick(2);render();log("進入："+rooms[next].name)}
-function inspect(id){
- if(state.ended)return;tick(1);
- const once=state.seen[id];
- const data={
- desk:()=>{if(!once){state.seen.desk=true;addItem("生鏽鑰匙");addClue("便條：鑰匙藏在接待桌的抽屜。");modal("🗝️","抽屜深處", "你摸到一把冰冷的生鏽鑰匙。便條背面還寫著：『不要相信畫中的眼睛。』",["收下鑰匙"])}else modal("🗝️","接待桌","抽屜已經空了。",["返回"])},
- portrait:()=>{if(!once){state.seen.portrait=true;state.portrait=true;addClue("畫框背面：生日是 10 月 24 日。");modal("🖼️","畫像背後","你取下畫框，背面刻著：『10 月 24 日，她被帶走。』畫布後有一道抓痕。",["返回"])}else modal("🖼️","老舊畫像","畫中女人的眼睛似乎又轉向你。",["返回"])},
- stairs:()=>{modal("🪜","通往二樓","樓梯盡頭傳來音樂盒的聲音。你需要先找到鑰匙。",["返回"])},
- diary:()=>{if(!once){state.seen.diary=true;state.diary=true;addClue("日記：她最害怕被時間記住。");addClue("日記署名：小雨。");modal("📖","少女的日記","「媽媽說我只是忘了自己的名字。但我記得，我叫小雨。若有人找到這本日記，請讓時鐘停在我離開的那一刻。」",["闔上日記"])}else modal("📖","少女的日記","日記最後一頁被淚水暈開。",["返回"])},
- music:()=>{if(!once){state.seen.music=true;addItem("音樂盒發條");modal("🎼","音樂盒底部","你取出一枚小小的發條。音樂盒停止了，房間也瞬間安靜。",["收下"])}else modal("🎼","音樂盒","它已經不再轉動。",["返回"])},
- mirror:()=>{if(!once){state.seen.mirror=true;scare("鏡中的你沒有眨眼","鏡面浮現一隻手印，彷彿有人從另一側碰觸玻璃。",false);addClue("鏡面手印：地下室裡有東西在等你。")}else modal("🪞","梳妝鏡","鏡中的房間空無一人。",["返回"])},
- clock:()=>{if(!once){state.seen.clock=true;addClue("時鐘提示：日期 10/24，密碼需輸入 1024。");modal("🕰️","停止的時鐘","你將指針撥回 10 月 24 日。時鐘背面浮出四個數字：1024。",["返回"])}else modal("🕰️","停止的時鐘","指針停在 11:11。",["返回"])},
- cabinet:()=>{if(!state.code){askCode()}else modal("🗄️","鐵櫃","鐵櫃已經打開，裡面只剩一張泛黃的照片。",["返回"])},
- shadow:()=>{if(!once){state.seen.shadow=true;scare("黑影移動了","你轉過頭，一張慘白的臉貼在你耳邊。",true);addItem("泛黃照片");addClue("照片背面寫著：小雨。")}else modal("👁️","角落","黑影消失了，只剩一股寒意。",["返回"])},
- door:()=>{if(!state.final){askName()}else finish()},
- wall:()=>modal("🩸","牆上刻痕","四道刻痕旁寫著：『名字是她自己選的，不是別人給的。』",["返回"])
- };
- (data[id]||(()=>modal("…","空無一物","沒有發現任何東西。",["返回"])))()
+
+function room(x,z,w,d){
+ cube(x,-.15,z,w,.3,d,floor);
+ cube(x,3,z,w,.2,d,dark);
+ cube(x-w/2,1.5,z,.2,3,d,wall);
+ cube(x+w/2,1.5,z,.2,3,d,wall);
+ cube(x,1.5,z-d/2,w,3,.2,wall);
+ cube(x,1.5,z+d/2,w,3,.2,wall);
 }
-function modal(icon,title,txt,buttons){$("modalIcon").textContent=icon;$("modalTitle").textContent=title;$("modalText").textContent=txt;$("modalInput").innerHTML="";$("modalButtons").innerHTML=buttons.map(b=>`<button class="btn" onclick="closeModal()">${b}</button>`).join("");$("modal").classList.remove("hidden")}
-function closeModal(){$("modal").classList.add("hidden")}
-function askCode(){$("modalIcon").textContent="🔐";$("modalTitle").textContent="四位數密碼";$("modalText").textContent="時鐘上的日期是什麼？輸入四位數密碼。";$("modalInput").innerHTML='<input id="answer" maxlength="4" inputmode="numeric" placeholder="••••">';$("modalButtons").innerHTML='<button class="btn" onclick="checkCode()">確認</button><button class="btn secondary" onclick="closeModal()">取消</button>';$("modal").classList.remove("hidden")}
-function checkCode(){if($("answer").value==="1024"){state.code=true;addItem("洋樓舊照片");addClue("照片背面：小雨。");closeModal();modal("🔓","鐵櫃開啟","鐵櫃裡有一張照片，背面寫著「小雨」。照片中的女孩正是日記的主人。",["繼續"])}else{closeModal();state.health--;render();scare("密碼錯誤","鐵櫃突然猛烈震動！有什麼東西從裡面敲了三下。",true);if(state.health<=0)gameOver()}}
-function askName(){$("modalIcon").textContent="🚪";$("modalTitle").textContent="最後的問題";$("modalText").textContent="鐵門上的字逐漸浮現：『說出她真正的名字。』";$("modalInput").innerHTML='<input id="answer" maxlength="8" placeholder="輸入名字" style="width:190px;letter-spacing:2px">';$("modalButtons").innerHTML='<button class="btn" onclick="checkName()">確認</button><button class="btn secondary" onclick="closeModal()">取消</button>';$("modal").classList.remove("hidden")}
-function checkName(){const v=$("answer").value.trim();if(v==="小雨"||v==="雨"){state.final=true;closeModal();modal("👁️","門後的聲音","「謝謝你，終於有人記得我了。」門鎖緩緩打開。但你身後的影子，卻沒有跟著移動……",["走向出口"])}else{closeModal();state.health--;render();scare("她不喜歡這個答案","牆壁滲出黑色液體，遠處傳來尖銳的笑聲。",true);if(state.health<=0)gameOver()}}
-function scare(title,txt,damage){$("scene").classList.add("danger");setTimeout(()=>$("scene").classList.remove("danger"),1200);if(damage){state.health--;render();if(state.health<=0){gameOver();return}}modal("👁️",title,txt,["繼續探索"])}
-function showHint(){const hints=["先檢查大廳的接待桌和畫像。","少女房間裡的日記與音樂盒都很重要。","地下室的時鐘提示了四位數密碼。","最後一道門需要說出日記主人的名字。"];modal("☾","低語提示",hints[state.room],["我知道了"])}
-function finish(){state.ended=true;$("modalIcon").textContent="🌅";$("modalTitle").textContent="真相的代價";$("modalText").textContent="你走出洋樓，天色已經泛白。警方在屋內找到一具塵封多年的空棺。你終於救出了小雨的記憶——但回到家後，你發現口袋裡多了一張新的邀請函。上面寫著：『明晚，11:11。』";$("modalButtons").innerHTML='<button class="btn" onclick="location.reload()">重新遊玩</button>';$("modal").classList.remove("hidden")}
-function gameOver(){state.ended=true;$("modalIcon").textContent="💀";$("modalTitle").textContent="你留在了洋樓";$("modalText").textContent="黑暗吞沒了最後一絲光。隔天，洋樓的門口多了一雙鞋。";$("modalButtons").innerHTML='<button class="btn" onclick="location.reload()">重新挑戰</button>';$("modal").classList.remove("hidden")}
-$("startBtn").onclick=()=>{$("start").classList.add("hidden");$("game").classList.remove("hidden");render();log("你推開大門，身後傳來上鎖聲。")};
+
+// 五個房間
+room(0,5,8,8);
+room(0,-3,8,8);
+room(-8,-3,8,8);
+room(8,-3,8,8);
+room(0,-11,8,8);
+
+// 走廊
+cube(0,-.1,1,3,.2,4,floor);
+cube(-4,-.1,-3,4,.2,2,floor);
+cube(4,-.1,-3,4,.2,2,floor);
+cube(0,-.1,-7,3,.2,2,floor);
+
+// 家具
+cube(-2,.7,5,2,.2,.7,wood);
+cube(-8,.4,-4,3,.5,2,wood);
+cube(-8,.8,-4,2.8,.3,1.8,material(0x514748));
+cube(-11,1,-.5,1,2,1,wood);
+cube(8,.8,-3,3,.2,1.5,wood);
+
+// 燈光
+const lamps=[];
+function addLamp(x,y,z){
+ const l=new THREE.PointLight(0x884433,1.5,8);
+ l.position.set(x,y,z);
+ scene.add(l);
+ lamps.push(l);
+}
+addLamp(-2,2.5,5);
+addLamp(0,2.5,-3);
+addLamp(-8,2.5,-3);
+addLamp(8,2.5,-3);
+addLamp(0,2.5,-11);
+
+// 記憶碎片
+const memories=[];
+function addMemory(x,y,z,title,text){
+ const obj=new THREE.Mesh(
+  new THREE.BoxGeometry(.35,.05,.25),
+  material(0xc8bda6)
+ );
+ obj.position.set(x,y,z);
+ scene.add(obj);
+ memories.push({obj,title,text,found:false});
+}
+addMemory(-2,1.1,5.8,"客廳的紙條",
+"媽媽說，十一點以後不可以開門。\n可是小雨一直敲門。");
+addMemory(-8,1.1,-4,"妹妹的日記",
+"鑰匙藏在餐桌下面。\n姐姐回來了，叫她不要相信鏡子。");
+addMemory(8,1.1,-3,"餐廳的照片",
+"火不是意外。\n那天晚上，姐姐把門鎖上了。");
+
+// 地下室密碼物件
+const keypad=new THREE.Mesh(
+ new THREE.BoxGeometry(.6,.9,.1),
+ material(0x66513d)
+);
+keypad.position.set(0,1.2,-13.5);
+scene.add(keypad);
+
+// 鬼怪
+const ghost=new THREE.Group();
+const ghostBody=new THREE.Mesh(
+ new THREE.CapsuleGeometry(.35,1,5,8),
+ dark
+);
+ghostBody.position.y=1;
+ghost.add(ghostBody);
+
+const ghostHead=new THREE.Mesh(
+ new THREE.SphereGeometry(.32,12,10),
+ dark
+);
+ghostHead.position.y=1.8;
+ghost.add(ghostHead);
+
+const eyeMaterial=new THREE.MeshBasicMaterial({color:0xc90020});
+for(const x of [-.12,.12]){
+ const eye=new THREE.Mesh(
+  new THREE.SphereGeometry(.04,8,8),
+  eyeMaterial
+ );
+ eye.position.set(x,1.85,-.28);
+ ghost.add(eye);
+}
+ghost.position.set(-8,0,-8);
+ghost.visible=false;
+scene.add(ghost);
+
+let started=false;
+let locked=false;
+let keys={};
+let yaw=0,pitch=0;
+let found=0;
+let sanity=100;
+let flash=true;
+let nearest=null;
+let gameOver=false;
+
+function updateHUD(){
+ document.querySelector("#count").textContent=found+" / 3";
+ document.querySelector("#objective").textContent=
+ found===3?"前往地下室輸入密碼":"尋找記憶碎片";
+}
+
+function message(text){
+ document.querySelector("#hint").textContent=text;
+}
+
+function startGame(){
+ started=true;
+ document.querySelector("#screen").style.display="none";
+ renderer.domElement.requestPointerLock();
+}
+
+document.querySelector("#start").onclick=startGame;
+
+document.addEventListener("pointerlockchange",()=>{
+ locked=document.pointerLockElement===renderer.domElement;
+ if(started&&!locked&&!gameOver){
+  document.querySelector("#screen").style.display="flex";
+  document.querySelector(".panel").innerHTML=
+  '<h1>暫停</h1><p>屋子裡的聲音沒有停止。</p><button onclick="location.reload()">重新開始</button>';
+ }
+});
+
+document.addEventListener("mousemove",e=>{
+ if(!locked)return;
+ yaw-=e.movementX*.002;
+ pitch-=e.movementY*.002;
+ pitch=Math.max(-1.3,Math.min(1.3,pitch));
+ camera.rotation.order="YXZ";
+ camera.rotation.y=yaw;
+ camera.rotation.x=pitch;
+});
+
+document.addEventListener("keydown",e=>{
+ keys[e.code]=true;
+ if(e.code==="KeyF"){
+  flash=!flash;
+  flashlight.intensity=flash?35:0;
+  document.querySelector("#light").textContent=flash?"開啟":"關閉";
+ }
+ if(e.code==="KeyE")interact();
+});
+document.addEventListener("keyup",e=>keys[e.code]=false);
+
+renderer.domElement.addEventListener("click",()=>{
+ if(started&&!locked&&!gameOver)renderer.domElement.requestPointerLock();
+});
+
+const raycaster=new THREE.Raycaster();
+function findTarget(){
+ raycaster.setFromCamera(new THREE.Vector2(0,0),camera);
+ const objects=[
+  ...memories.filter(m=>!m.found).map(m=>m.obj),
+  keypad
+ ];
+ const hits=raycaster.intersectObjects(objects);
+ return hits.length&&hits[0].distance<2.5?hits[0].object:null;
+}
+
+function interact(){
+ if(!started||!locked)return;
+ const target=findTarget();
+ if(!target)return;
+
+ const memory=memories.find(m=>m.obj===target);
+ if(memory){
+  memory.found=true;
+  found++;
+  memory.obj.visible=false;
+  updateHUD();
+  message(memory.title+"："+memory.text.replaceAll("\n"," "));
+  if(found===1)ghost.visible=true;
+  if(found===3)message("地下室的門打開了。快去找出口。");
+  return;
+ }
+ if(target===keypad){
+  if(found<3){
+   message("門鎖住了，還有記憶沒有找回。");
+   return;
+  }
+  const code=prompt("輸入四位數密碼");
+  if(code==="1024"){
+   gameOver=true;
+   document.exitPointerLock();
+   document.querySelector("#screen").style.display="flex";
+   document.querySelector(".panel").innerHTML=
+   "<h1>逃出老宅</h1><p>你終於想起那天晚上發生的事。</p><p>午夜 11:11 — END</p><button onclick='location.reload()'>重新開始</button>";
+  }else message("密碼錯誤。她聽見了。");
+ }
+}
+
+// 簡易碰撞
+function blocked(x,z){
+ return Math.abs(x+2)<1.1&&Math.abs(z-5)<.8;
+}
+
+const clock=new THREE.Clock();
+let time=0;
+
+function animate(){
+ requestAnimationFrame(animate);
+ const dt=Math.min(clock.getDelta(),.04);
+ time+=dt;
+
+ lamps.forEach((l,i)=>{
+  l.intensity=1.1+Math.sin(time*3+i*2)*.5;
+ });
+
+ if(started&&locked&&!gameOver){
+  const move=new THREE.Vector3();
+  if(keys.KeyW)move.z-=1;
+  if(keys.KeyS)move.z+=1;
+  if(keys.KeyA)move.x-=1;
+  if(keys.KeyD)move.x+=1;
+  move.normalize();
+
+  const speed=keys.ShiftLeft?4.2:2.5;
+  const dx=(move.x*Math.cos(yaw)+move.z*Math.sin(yaw))*speed*dt;
+  const dz=(move.z*Math.cos(yaw)-move.x*Math.sin(yaw))*speed*dt;
+
+  if(!blocked(camera.position.x+dx,camera.position.z))
+   camera.position.x+=dx;
+  camera.position.z+=dz;
+
+  camera.position.x=THREE.MathUtils.clamp(camera.position.x,-11.5,11.5);
+  camera.position.z=THREE.MathUtils.clamp(camera.position.z,-14,9);
+  camera.position.y=1.6;
+
+  flashlight.target.position.set(
+   camera.position.x+Math.sin(yaw)*2,
+   camera.position.y+Math.sin(pitch)*2,
+   camera.position.z-Math.cos(yaw)*2
+  );
+
+  nearest=findTarget();
+  message(nearest?"按 E 調查":"");
+
+  if(ghost.visible){
+   const dx=camera.position.x-ghost.position.x;
+   const dz=camera.position.z-ghost.position.z;
+   const dist=Math.hypot(dx,dz);
+   if(dist>1.2){
+    ghost.position.x+=dx/dist*1.1*dt;
+    ghost.position.z+=dz/dist*1.1*dt;
+   }
+   ghost.lookAt(camera.position.x,0,camera.position.z);
+   if(dist<5){
+    sanity-=dt*2;
+    if(sanity<=0){
+     gameOver=true;
+     document.exitPointerLock();
+     document.querySelector("#screen").style.display="flex";
+     document.querySelector(".panel").innerHTML=
+     "<h1>她找到你了</h1><p>這次，不要再丟下我。</p><button onclick='location.reload()'>重新開始</button>";
+    }
+   }
+  }
+ }
+
+ renderer.render(scene,camera);
+}
+animate();
+
+window.addEventListener("resize",()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
 </script>
-</body></html>
+</body>
+</html>
