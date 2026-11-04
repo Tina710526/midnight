@@ -76,13 +76,14 @@ const flashlight=new THREE.SpotLight(0xe0e5ed,65,24,Math.PI/5,.45,1.2);
 camera.add(flashlight);
 camera.add(flashlight.target);
 
-// 讓手電筒朝攝影機前方照射
 flashlight.position.set(0, 0, 0);
 flashlight.target.position.set(0, 0, -1);
+
 flashlight.intensity = 100;
 flashlight.distance = 30;
 flashlight.angle = Math.PI / 4;
 flashlight.penumbra = 0.4;
+
 scene.add(camera);
 
 const material=(color,roughness=1)=>
@@ -342,11 +343,17 @@ function animate(){
   camera.position.z=THREE.MathUtils.clamp(camera.position.z,-14,9);
   camera.position.y=1.6;
 
-  flashlight.target.position.set(
-   camera.position.x+Math.sin(yaw)*2,
-   camera.position.y+Math.sin(pitch)*2,
-   camera.position.z-Math.cos(yaw)*2
-  );
+  // 手電筒位置跟隨攝影機
+camera.getWorldPosition(flashlight.position);
+
+// 取得攝影機目前真正面對的方向
+const direction = new THREE.Vector3();
+camera.getWorldDirection(direction);
+
+// 將照射目標放在視線前方
+flashlight.target.position
+  .copy(flashlight.position)
+  .add(direction.multiplyScalar(10));
 
   nearest=findTarget();
   message(nearest?"按 E 調查":"");
