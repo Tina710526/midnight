@@ -75,6 +75,14 @@ scene.add(moon);
 const flashlight=new THREE.SpotLight(0xe0e5ed,65,24,Math.PI/5,.45,1.2);
 camera.add(flashlight);
 camera.add(flashlight.target);
+
+// 讓手電筒朝攝影機前方照射
+flashlight.position.set(0, 0, 0);
+flashlight.target.position.set(0, 0, -1);
+flashlight.intensity = 100;
+flashlight.distance = 30;
+flashlight.angle = Math.PI / 4;
+flashlight.penumbra = 0.4;
 scene.add(camera);
 
 const material=(color,roughness=1)=>
@@ -373,6 +381,25 @@ window.addEventListener("resize",()=>{
  camera.aspect=innerWidth/innerHeight;
  camera.updateProjectionMatrix();
  renderer.setSize(innerWidth,innerHeight);
+});
+  // 禁止滑鼠右鍵跳出瀏覽器選單
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+});
+
+// 滑鼠右鍵觸發原本 F 鍵的手電筒開關功能
+document.addEventListener('mousedown', (e) => {
+  if (e.button === 2) {
+    e.preventDefault();
+
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'f',
+        code: 'KeyF',
+        bubbles: true
+      })
+    );
+  }
 });
 </script>
 </body>
