@@ -103,7 +103,7 @@ door('地下室通往玄關',0,6,0,'exit',false);door('玄關大門',-2,9.9,0,'f
 for(let i=0;i<7;i++){const candle=new THREE.PointLight(0x9a4355,.12,3);candle.position.set(-9+i*2.2,1.5,5.1);scene.add(candle)}
 // player and controls
 const keys={};let yaw=Math.PI/2,pitch=0,locked=false,flashOn=true,active=null,started=false,paused=true,elapsed=0,ghostOn=false,gameOver=false;
-const player={pos:new THREE.Vector3(-7,1.65,3.2),vel:new THREE.Vector3(),radius:.32};
+const player={pos:new THREE.Vector3(-9,1.65,3.2),vel:new THREE.Vector3(),radius:.32};
 const raycaster=new THREE.Raycaster();const center=new THREE.Vector2(0,0);const clues=new Set();
 const ghost=new THREE.Group();const ghostBody=new THREE.Mesh(new THREE.CapsuleGeometry(.38,1.1,4,8),new THREE.MeshStandardMaterial({color:0xc4b7c2,transparent:true,opacity:.78,emissive:0x342330}));ghostBody.position.y=1;ghost.add(ghostBody);const eyeMat=new THREE.MeshBasicMaterial({color:0x9c142b});for(const x of [-.14,.14]){const e=new THREE.Mesh(new THREE.SphereGeometry(.055,8,8),eyeMat);e.position.set(x,1.35,.32);ghost.add(e)}ghost.position.set(8,0,8);scene.add(ghost);ghost.visible=false;
 function notify(t){msgEl.textContent=t}
@@ -149,7 +149,7 @@ function interact(){
  if(it.name==='錄音帶'){ghostOn=true;ghost.visible=true;ghost.position.set(9,0,8);toast('身後傳來沉重的腳步聲……')}
  if(it.name==='出口鑰匙')toast('出口鑰匙已取得。前往玄關！');
 }
-function lose(){ghostOn=false;ghost.visible=false;player.pos.set(-7,1.65,3.2);yaw=Math.PI/2;clues.delete('電箱已解除');setRoom();notify('你被抓住了。再次睜開眼睛，你又回到客廳……');toast('她不會讓你這麼容易離開。')}
+function lose(){ghostOn=false;ghost.visible=false;player.pos.set(-9,1.65,3.2);yaw=Math.PI/2;clues.delete('電箱已解除');setRoom();notify('你被抓住了。再次睜開眼睛，你又回到客廳……');toast('她不會讓你這麼容易離開。')}
 function win(){paused=true;gameOver=true;document.exitPointerLock?.();overlay.style.display='flex';overlayTitle.textContent='結局：循環';overlayText.textContent='你把鑰匙插進大門。\n門外沒有街道，只有一片熟悉的客廳。\n\n牆上的時鐘再次指向 11:11。\n照片裡原本模糊的那張臉，變成了你的樣子。';startBtn.textContent='重新開始';}
 function animate(ts){
  requestAnimationFrame(animate);const dt=Math.min(.04,(ts-(animate.last||ts))/1000);animate.last=ts;
@@ -176,7 +176,30 @@ document.addEventListener('pointerlockchange',()=>{
   }
 });
 document.addEventListener('mousemove',e=>{if(!locked)return;yaw-=e.movementX*.0022;pitch-=e.movementY*.0022;pitch=Math.max(-1.35,Math.min(1.35,pitch))});
-document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyF'&&started){flashOn=!flashOn;flashlight.visible=flashOn;lightEl.textContent='手電筒：'+(flashOn?'開':'關')}if(e.code==='KeyE'&&started&&!paused)interact()});
+document.addEventListener('keydown',e=>{
+    if(['KeyW','KeyA','KeyS','KeyD'].includes(e.code)){
+        e.preventDefault();
+        keys[e.code]=true;
+    }
+
+    if(e.code==='ShiftLeft'||e.code==='ShiftRight'){
+        keys[e.code]=true;
+    }
+
+    if(e.code==='KeyF'&&started){
+        flashOn=!flashOn;
+        flashlight.visible=flashOn;
+        lightEl.textContent='手電筒：'+(flashOn?'開':'關');
+    }
+
+    if(e.code==='KeyE'&&started&&!paused){
+        interact();
+    }
+});
+
+document.addEventListener('keyup',e=>{
+    keys[e.code]=false;
+});
 document.addEventListener('keyup',e=>keys[e.code]=false);
 document.addEventListener('keydown',e=>{
   if(e.code==='Escape'&&started&&!gameOver){
