@@ -111,7 +111,10 @@ function toast(t){toastEl.textContent=t;toastEl.style.display='block';clearTimeo
 function updateClues(){cluesEl.innerHTML='線索：'+(clues.size?[...clues].join('、'):'尚無')}
 function setRoom(){const p=player.pos;let n='客廳';if(p.x>0&&p.x<4)n='走廊';if(p.x>=4&&p.z<2)n='妹妹的房間';if(p.z>=2&&p.x>=0)n='地下室';if(p.x<0&&p.z>6)n='玄關';roomEl.textContent=n}
 function look(){camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;camera.position.copy(player.pos);const dir=new THREE.Vector3(0,0,-1).applyEuler(camera.rotation);flashlight.position.copy(camera.position);flashlight.target.position.copy(camera.position).add(dir.multiplyScalar(8));flashlight.target.updateMatrixWorld()}
-function withinBounds(x,z){if(x<-11.45||x>11.45||z<-5.45||z>9.45)return false;
+function withinBounds(x,z){
+    return x > -11.45 && x < 11.45 &&
+           z > -5.45 && z < 9.45;
+}
  // room connectivity boundary checks
  if(x>-.0&&x<.5&&z< -1.5)return false;
  if(x>-.0&&x<.5&&z>1.5)return false;
@@ -177,13 +180,10 @@ document.addEventListener('pointerlockchange',()=>{
 });
 document.addEventListener('mousemove',e=>{if(!locked)return;yaw-=e.movementX*.0022;pitch-=e.movementY*.0022;pitch=Math.max(-1.35,Math.min(1.35,pitch))});
 document.addEventListener('keydown',e=>{
-    if(['KeyW','KeyA','KeyS','KeyD'].includes(e.code)){
-        e.preventDefault();
-        keys[e.code]=true;
-    }
+    keys[e.code]=true;
 
-    if(e.code==='ShiftLeft'||e.code==='ShiftRight'){
-        keys[e.code]=true;
+    if(['KeyW','KeyA','KeyS','KeyD','Space'].includes(e.code)){
+        e.preventDefault();
     }
 
     if(e.code==='KeyF'&&started){
@@ -200,7 +200,6 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('keyup',e=>{
     keys[e.code]=false;
 });
-document.addEventListener('keyup',e=>keys[e.code]=false);
 document.addEventListener('keydown',e=>{
   if(e.code==='Escape'&&started&&!gameOver){
     if(document.pointerLockElement)document.exitPointerLock?.();
