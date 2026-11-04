@@ -167,11 +167,24 @@ requestAnimationFrame(animate);
 function start(){if(gameOver){location.reload();return}started=true;paused=false;overlay.style.display='none';renderer.domElement.requestPointerLock?.();notify('探索客廳。靠近物品後按 E 調查。')}
 startBtn.addEventListener('click',start);
 renderer.domElement.addEventListener('click',()=>{if(started&&!gameOver&&!locked)renderer.domElement.requestPointerLock?.()});
-document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===renderer.domElement;if(started&&!gameOver){paused=!locked;if(!locked){promptEl.textContent='點擊畫面繼續';}else promptEl.textContent=''}})
+document.addEventListener('pointerlockchange',()=>{
+  locked=document.pointerLockElement===renderer.domElement;
+  // 滑鼠解鎖只停止視角旋轉，不暫停遊戲；鍵盤仍可移動
+  if(started&&!gameOver){
+    paused=false;
+    promptEl.textContent=locked?'':'滑鼠未鎖定：WASD 仍可移動，點擊畫面可轉動視角';
+  }
+});
 document.addEventListener('mousemove',e=>{if(!locked)return;yaw-=e.movementX*.0022;pitch-=e.movementY*.0022;pitch=Math.max(-1.35,Math.min(1.35,pitch))});
 document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyF'&&started){flashOn=!flashOn;flashlight.visible=flashOn;lightEl.textContent='手電筒：'+(flashOn?'開':'關')}if(e.code==='KeyE'&&started&&!paused)interact()});
 document.addEventListener('keyup',e=>keys[e.code]=false);
-document.addEventListener('keydown',e=>{if(e.code==='Escape'&&started&&!gameOver)paused=true});
+document.addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&started&&!gameOver){
+    if(document.pointerLockElement)document.exitPointerLock?.();
+    paused=false;
+    promptEl.textContent='滑鼠已暫停：WASD 仍可移動，點擊畫面恢復視角控制';
+  }
+});
 window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 flashlight.visible=true;setRoom();updateClues();look();
 })();
